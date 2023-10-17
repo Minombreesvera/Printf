@@ -11,7 +11,8 @@
  * @size: For Size specifier
  * Return: 1 or 2;
  */
-int handle_print(const char *frmt, int *ind, va_list list_of_arg, char buffer[],
+int handle_print(const char *frmt, int *ind,
+		va_list list_of_arg, char buffer[],
 	int flag, int width, int precision, int size)
 {
 	int i, unknow_len = 0, char_len = -1;
@@ -24,7 +25,8 @@ int handle_print(const char *frmt, int *ind, va_list list_of_arg, char buffer[],
 	};
 	for (i = 0; frmt_types[i].frmt != '\0'; i++)
 		if (frmt[*ind] == frmt_types[i].frmt)
-			return (frmt_types[i].fn(list_of_arg, buffer, flag, width, precision, size));
+			return (frmt_types[i].fn(list_of_arg,
+						buffer, flag, width, precision, size));
 
 	if (frmt_types[i].frmt == '\0')
 	{
