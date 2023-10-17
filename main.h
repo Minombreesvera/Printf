@@ -1,252 +1,117 @@
-#include "main.h"
+#ifndef MAIN_H
+#define MAIN_H
+#include <stdarg.h>
+#include <stdio.h>
+#include <unistd.h>
 
-/************************* WRITE HANDLE *************************/
+#define UNUSED(x) (void)(x)
+#define BUFF_SIZE 1024
+
+/* FLAG */
+#define F_MINUS 1
+#define F_PLUS 2
+#define F_ZERO 4
+#define F_HASH 8
+#define F_SPACE 16
+
+/* SIZES */
+#define S_LONG 2
+#define S_SHORT 1
+
 /**
- * write_handler_char - Prints a string
- * @c: The char types.
- * @buffer: The Buffer array to handle print
- * @flag:  This Calculates active flags.
- * @width: To get width.
- * @precision: For precision specifier
- * @size: For Size specifier
+ * struct frmt - Struct op
  *
- * Return: Number of chars printed.
+ * @frmt: The format.
+ * @fn: The function associated.
  */
+struct frmt
+{
+	char frmt;
+	int (*fn)(va_list, char[], int, int, int, int);
+};
+
+
+/**
+ * typedef struct frmt frmt_t - Struct op
+ *
+ * @frmt: The format.
+ * @fm_t: The function associated.
+ */
+typedef struct frmt frmt_t;
+
+int _printf(const char *format, ...);
+int handle_print(const char *frmt, int *i,
+va_list list_of_arg, char buffer[], int flag, int width, int precision, int size);
+
+/****************** FUNCTIONS ******************/
+
+/* Funtions to print chars and strings */
+int print_char(va_list arg_types, char buffer[],
+	int flag, int width, int precision, int size);
+int print_str(va_list arg_types, char buffer[],
+	int flag, int width, int precision, int size);
+int print_percent(va_list arg_types, char buffer[],
+	int flag, int width, int precision, int size);
+
+/* Functions to print numbers */
+int print_int(va_list arg_types, char buffer[],
+	int flag, int width, int precision, int size);
+int print_bin(va_list arg_types, char buffer[],
+	int flag, int width, int precision, int size);
+int print_unsigned(va_list arg_types, char buffer[],
+	int flag, int width, int precision, int size);
+int print_oct(va_list arg_types, char buffer[],
+	int flag, int width, int precision, int size);
+int print_hex(va_list arg_types, char buffer[],
+	int flag, int width, int precision, int size);
+int print_hex_upper(va_list arg_types, char buffer[],
+	int flag, int width, int precision, int size);
+
+int print_hexa(va_list arg_types, char maps[],
+char buffer[], int flag, char act_flag, int width, int precision, int size);
+
+/* Function to print non printable characters */
+int print_non_printable(va_list arg_types, char buffer[],
+	int flag, int width, int precision, int size);
+
+/* Funcion to print memory address */
+int print_pointer(va_list arg_types, char buffer[],
+	int flag, int width, int precision, int size);
+
+/* Funciotns to handle other specifiers */
+int get_flag(const char *format, int *i);
+int get_width(const char *format, int *i, va_list list_of_arg);
+int get_precision(const char *format, int *i, va_list list_of_arg);
+int get_size(const char *format, int *i);
+
+/*Function to print string in reverse*/
+int print_reverse(va_list arg_types, char buffer[],
+	int flag, int width, int precision, int size);
+
+/*Function to print a string in rot 13*/
+int print_rot13_string(va_list arg_types, char buffer[],
+	int flag, int width, int precision, int size);
+
+/* width handler */
 int write_handler_char(char c, char buffer[],
-	int flag, int width, int precision, int size)
-{ /* char is stored at left and pading at buffer's right */
-	int i = 0;
-	char pad = ' ';
-
-	UNUSED(precision);
-	UNUSED(size);
-
-	if (flag & F_ZERO)
-		pad = '0';
-
-	buffer[i++] = c;
-	buffer[i] = '\0';
-
-	if (width > 1)
-	{
-		buffer[BUFF_SIZE - 1] = '\0';
-		for (i = 0; i < width - 1; i++)
-			buffer[BUFF_SIZE - i - 2] = pad;
-
-		if (flag & F_MINUS)
-			return (write(1, &buffer[0], 1) +
-					write(1, &buffer[BUFF_SIZE - i - 1], width - 1));
-		else
-			return (write(1, &buffer[BUFF_SIZE - i - 1], width - 1) +
-					write(1, &buffer[0], 1));
-	}
-
-	return (write(1, &buffer[0], 1));
-}
-
-/************************* WRITE NUMBER *************************/
-/**
- * write_numb - This Prints a string
- * @for_negative: List a of arguments
- * @ind: The char types.
- * @buffer: The Buffer array to handle print
- * @flag:  This Calculates active flags
- * @width: To get width.
- * @precision: For precision specifier
- * @size: For Size specifier
- *
- * Return: Number of chars printed.
- */
-int write_numb(int for_negative, int ind, char buffer[],
-	int flag, int width, int precision, int size)
-{
-	int len = BUFF_SIZE - ind - 1;
-	char pad = ' ', extra_ch = 0;
-
-	UNUSED(size);
-
-	if ((flag & F_ZERO) && !(flag & F_MINUS))
-		pad = '0';
-	if (for_negative)
-		extra_ch = '-';
-	else if (flag & F_PLUS)
-		extra_ch = '+';
-	else if (flag & F_SPACE)
-		extra_ch = ' ';
-
-	return (write_num(ind, buffer, flag, width, precision,
-		len, pad, extra_ch));
-}
-
-/**
- * write_num - To Write a number using a bufffer
- * @ind: The Index at which the number starts on the buffer
- * @buffer: For Buffer
- * @flag: For flag
- * @width: For width
- * @prec: For Precision specifier
- * @len: For Number length
- * @pad: For Pading char
- * @ext_c: Extra char
- *
- * Return: Number of printed chars.
- */
-int write_num(int ind, char buffer[],
-	int flag, int width, int prec,
-	int len, char pad, char ext_c)
-{
-	int i, pad_start = 1;
-
-	if (prec == 0 && ind == BUFF_SIZE - 2 && buffer[ind] == '0' && width == 0)
-		return (0); /* printf(".0d", 0)  no char is printed */
-	if (prec == 0 && ind == BUFF_SIZE - 2 && buffer[ind] == '0')
-		buffer[ind] = pad = ' '; /* width is displayed with pading ' ' */
-	if (prec > 0 && prec < len)
-		pad = ' ';
-	while (prec > len)
-		buffer[--ind] = '0', len++;
-	if (ext_c != 0)
-		len++;
-	if (width > len)
-	{
-		for (i = 1; i < width - len + 1; i++)
-			buffer[i] = pad;
-		buffer[i] = '\0';
-		if (flag & F_MINUS && pad == ' ')/* Asign extra char to left of buffer */
-		{
-			if (ext_c)
-				buffer[--ind] = ext_c;
-			return (write(1, &buffer[ind], len) + write(1, &buffer[1], i - 1));
-		}
-		else if (!(flag & F_MINUS) && pad == ' ')/* extra char to left of buff */
-		{
-			if (ext_c)
-				buffer[--ind] = ext_c;
-			return (write(1, &buffer[1], i - 1) + write(1, &buffer[ind], len));
-		}
-		else if (!(flag & F_MINUS) && pad == '0')/* extra char to left of pad */
-		{
-			if (ext_c)
-				buffer[--pad_start] = ext_c;
-			return (write(1, &buffer[pad_start], i - pad_start) +
-				write(1, &buffer[ind], len - (1 - pad_start)));
-		}
-	}
-	if (ext_c)
-		buffer[--ind] = ext_c;
-	return (write(1, &buffer[ind], len));
-}
-
-/**
- * write_unsgnd - This Writes an unsigned number
- * @for_negative: The Number indicating if the num is negative
- * @ind: The Index at which the number starts in the buffer
- * @buffer: For Array of chars
- * @flag: For flag specifiers
- * @width: For Width specifier
- * @precision: For Precision specifier
- * @size: For Size specifier
- *
- * Return: Number of written chars.
- */
-int write_unsgnd(int for_negative, int ind,
-	char buffer[],
-	int flag, int width, int precision, int size)
-{
-	/* The number is stored at the bufer's right and starts at position i */
-	int len = BUFF_SIZE - ind - 1, i = 0;
-	char pad = ' ';
-
-	UNUSED(for_negative);
-	UNUSED(size);
-
-	if (precision == 0 && ind == BUFF_SIZE - 2 && buffer[ind] == '0')
-		return (0); /* printf(".0d", 0)  no char is printed */
-
-	if (precision > 0 && precision < len)
-		pad = ' ';
-
-	while (precision > len)
-	{
-		buffer[--ind] = '0';
-		len++;
-	}
-
-	if ((flag & F_ZERO) && !(flag & F_MINUS))
-		pad = '0';
-
-	if (width > len)
-	{
-		for (i = 0; i < width - len; i++)
-			buffer[i] = pad;
-
-		buffer[i] = '\0';
-
-		if (flag & F_MINUS) /* Asign extra char to left of buffer [buffer>pad]*/
-		{
-			return (write(1, &buffer[ind], len) + write(1, &buffer[0], i));
-		}
-		else /* Asign extra char to left of pading [pad>buffer]*/
-		{
-			return (write(1, &buffer[0], i) + write(1, &buffer[ind], len));
-		}
-	}
-
-	return (write(1, &buffer[ind], len));
-}
-
-/**
- * write_pointer - To Write a memory address
- * @buffer: For Arrays of chars
- * @ind: For Index at which the number starts in the buffer
- * @len: length of number
- * @width: For width specifier
- * @flag: For flag specifier
- * @pad: For Char representing the pading
- * @ext_c: For Char representing extra char
- * @pad_start: For Index at which pading should start
- *
- * Return: Number of written chars.
- */
+	int flag, int width, int precision, int size);
+int write_numb(int is_positive, int ind, char buffer[],
+	int flag, int width, int precision, int size);
+int write_num(int ind, char bff[], int flag, int width, int precision,
+	int len, char pad, char ext_c);
 int write_pointer(char buffer[], int ind, int len,
-	int width, int flag, char pad, char ext_c, int pad_start)
-{
-	int i;
+	int width, int flag, char pad, char ext_c, int pad_start);
 
-	if (width > len)
-	{
-		for (i = 3; i < width - len + 3; i++)
-			buffer[i] = pad;
-		buffer[i] = '\0';
-		if (flag & F_MINUS && pad == ' ')/* Asign extra char to left of buffer */
-		{
-			buffer[--ind] = 'x';
-			buffer[--ind] = '0';
-			if (ext_c)
-				buffer[--ind] = ext_c;
-			return (write(1, &buffer[ind], len) + write(1, &buffer[3], i - 3));
-		}
-		else if (!(flag & F_MINUS) && pad == ' ')/* extra char to left of buffer */
-		{
-			buffer[--ind] = 'x';
-			buffer[--ind] = '0';
-			if (ext_c)
-				buffer[--ind] = ext_c;
-			return (write(1, &buffer[3], i - 3) + write(1, &buffer[ind], len));
-		}
-		else if (!(flag & F_MINUS) && pad == '0')/* extra char to left of pad */
-		{
-			if (ext_c)
-				buffer[--pad_start] = ext_c;
-			buffer[1] = '0';
-			buffer[2] = 'x';
-			return (write(1, &buffer[pad_start], i - pad_start) +
-				write(1, &buffer[ind], len - (1 - pad_start) - 2));
-		}
-	}
-	buffer[--ind] = 'x';
-	buffer[--ind] = '0';
-	if (ext_c)
-		buffer[--ind] = ext_c;
-	return (write(1, &buffer[ind], BUFF_SIZE - ind - 1));
-}
+int write_unsgnd(int for_negative, int ind,
+char buffer[],
+	int flag, int width, int precision, int size);
+
+/****************** UTILS ******************/
+int for_printable(char);
+int append_hex_code(char, char[], int);
+int for_digit(char);
+
+long int convert_size_number(long int num, int size);
+long int convert_size_unsgnd(unsigned long int num, int size);
+
+#endif /* MAIN_H */

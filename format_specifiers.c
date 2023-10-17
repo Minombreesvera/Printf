@@ -150,7 +150,6 @@ int print_int(va_list arg_types, char buffer[],
  * @width: get width.
  * @precision: For Precision specification
  * @size: For Size specifier
- * @cnt: Count.
  * Return: Numbers of char printed.
  */
 int print_bin(va_list arg_types, char buffer[],
