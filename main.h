@@ -52,7 +52,7 @@ int print_str(va_list arg_types, char buffer[],
 	int flag, int width, int precision, int size);
 int print_percent(va_list arg_types, char buffer[],
 	int flag, int width, int precision, int size);
-
+int pukmat(char c);
 /* Functions to print numbers */
 int print_int(va_list arg_types, char buffer[],
 	int flag, int width, int precision, int size);
@@ -62,7 +62,7 @@ int print_unsigned(va_list arg_types, char buffer[],
 	int flag, int width, int precision, int size);
 int print_oct(va_list arg_types, char buffer[],
 	int flag, int width, int precision, int size);
-int print_hex(va_list arg_types, char buffer[],
+int print_hexadec(va_list arg_types, char buffer[],
 	int flag, int width, int precision, int size);
 int print_hex_upper(va_list arg_types, char buffer[],
 	int flag, int width, int precision, int size);
@@ -114,4 +114,4 @@ int for_digit(char);
 long int convert_size_number(long int num, int size);
 long int convert_size_unsgnd(unsigned long int num, int size);
 
-#endif /* MAIN_H */
+#endif

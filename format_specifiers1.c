@@ -80,7 +80,7 @@ int print_oct(va_list arg_types, char buffer[],
 
 /************** PRINT UNSIGNED NUMBER IN HEXADECIMAL **************/
 /**
- * print_hex - Prints an unsigned number in hexadecimal notation
+ * print_hexadec - Prints an unsigned number in hexadecimal notation
  * @arg_types: List a of arguments
  * @buffer: The Buffer array to handle print
  * @flag:  This Calculates active flags
@@ -89,7 +89,7 @@ int print_oct(va_list arg_types, char buffer[],
  * @size: For Size specifier
  * Return: Number of chars printed
  */
-int print_hex(va_list arg_types, char buffer[],
+int print_hexadec(va_list arg_types, char buffer[],
 	int flag, int width, int precision, int size)
 {
 	return (print_hex(arg_types, "0123456789abcdef", buffer,
