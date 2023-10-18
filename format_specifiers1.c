@@ -92,7 +92,7 @@ int print_oct(va_list arg_types, char buffer[],
 int print_hexadec(va_list arg_types, char buffer[],
 	int flag, int width, int precision, int size)
 {
-	return (print_hex(arg_types, "0123456789abcdef", buffer,
+	return (print_hexa(arg_types, "0123456789abcdef", buffer,
 		flag, 'x', width, precision, size));
 }
 
