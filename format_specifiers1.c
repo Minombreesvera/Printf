@@ -128,7 +128,7 @@ int print_hex_upper(va_list arg_types, char buffer[],
  * @size: For Size specification
  * Return: Number of chars printed
  */
-int print_hex(va_list arg_types, char maps[], char buffer[],
+int print_hexa(va_list arg_types, char maps[], char buffer[],
 	int flag, char act_flag, int width, int precision, int size)
 {
 	int j = BUFF_SIZE - 2;
