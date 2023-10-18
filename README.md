@@ -132,7 +132,7 @@ Function That Prints Decimal In Binary.
 Function That Prints The percent sign.
 ```c
 /* Indetifier : %% */
-------------
+```c
 
 ## Authors
 
