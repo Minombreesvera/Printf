@@ -110,7 +110,7 @@ int print_hexadec(va_list arg_types, char buffer[],
 int print_hex_upper(va_list arg_types, char buffer[],
 	int flag, int width, int precision, int size)
 {
-	return (print_hex(arg_types, "0123456789ABCDEF", buffer,
+	return (print_hexa(arg_types, "0123456789ABCDEF", buffer,
 		flag, 'X', width, precision, size));
 }
 
