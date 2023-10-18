@@ -19,7 +19,7 @@ int handle_print(const char *frmt, int *ind,
 	frmt_t frmt_types[] = {
 		{'c', print_char}, {'s', print_str}, {'%', print_percent},
 		{'i', print_int}, {'d', print_int}, {'b', print_bin},
-		{'u', print_unsigned}, {'o', print_oct}, {'x', print_hexa},
+		{'u', print_unsigned}, {'o', print_oct}, {'x', print_hexadec},
 		{'X', print_hex_upper}, {'p', print_pointer}, {'S', print_non_printable},
 		{'r', print_reverse}, {'R', print_rot13_string}, {'\0', NULL}
 	};
